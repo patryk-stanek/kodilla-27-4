@@ -56,3 +56,37 @@ function reducer(state = initialState, action) {
             return state;
     }
 }
+
+
+
+///////////
+
+//tworzenie store'a
+//reduktor stojący najwyżej w herarchii powinien być przekazywany do funkcji createStore która utworzy całe drzewo repezentujące stan
+import { createStore } from 'redux';
+import reducers from './reducers.js';
+
+//funkcja createStore jako drugi argument może przyjmować wartość początkową stanu
+const store = createStore(reducers);
+
+//wywołuje przykładową funkcję po każdej modyfikacji store/magazynu;
+store.subscribe(() => console.log('zmiana w stanie'));
+
+//odpięcie listenera logującego informację o zmiana w konsoli można wykonwać poprzez wywołanie funkcji zwracanej przez metodą store.subscribe()
+//podpięcie tego pod zmienną ułatwia życie
+var unsubscribe = store.subscribe(() => console.log('zmiana w stanie'));
+unsubscribe();
+
+//zwracanie stanu aplikacji
+store.subscribe(() => console.log(store.getState()));
+
+//wysyłanie informacji o akcji do store
+store.dispatch(addComment('pierwszy komentarz'));
+store.dispatch(addComment('drugi komentarz'));
+
+//--------------------
+
+store.subscribe(() => {
+    const comments = store.getState().comments;
+    ReactDOM.render(<CommentsList comments={comments} />, mountingPoint)
+});
